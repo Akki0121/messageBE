@@ -14,9 +14,11 @@ exports.register = async (req, res) => {
       password: hashedPassword,
     });
     await user.save();
-    res.status(201).json({ message: "User registered successfully!", user });
+    return res
+      .status(201)
+      .json({ message: "User registered successfully!", user });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -34,23 +36,40 @@ exports.login = async (req, res) => {
     });
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: "none",
       maxAge: 3600000,
     });
-    res.json({ message: "Login successful!", user });
+    return res.json({ message: "Login successful!", user });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const { id } = req.pararms;
+    const userData = await User.findById(id).select("-password");
+    console.log(userData);
+    if (!userData) return res.status(404).json({ error: "User not found" });
+    return res.json({
+      userData,
+      message: "User profile retrieved successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.logout = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
     user.status = "offline";
     await user.save();
     res.clearCookie("authToken");
-    res.json({ message: "Logout successful!" });
+    return res.json({ message: "Logout successful!" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };

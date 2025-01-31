@@ -5,6 +5,6 @@ const authenticateToken = require("../Middleware/auth");
 const router = express.Router();
 
 router.post("/send", authenticateToken, sendMessage);
-router.get("/", authenticateToken, getMessages);
+router.get("/get-message", authenticateToken, getMessages);
 
 module.exports = router;

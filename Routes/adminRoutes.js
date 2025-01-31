@@ -8,8 +8,8 @@ const authenticateToken = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/", authenticateToken, getAllUsers);
-router.put("/:id", authenticateToken, updateUser);
-router.delete("/:id", authenticateToken, deleteUser);
+router.get("/list-users", authenticateToken, getAllUsers);
+router.put("/update/:id", authenticateToken, updateUser);
+router.delete("/delete-user/:id", authenticateToken, deleteUser);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const userRoutes = require("./Routes/userRoutes");
 const adminRoutes = require("./Routes/adminRoutes");
 const messageRoutes = require("./Routes/messageRoutes");
+const authenticateToken = require("./middleware/auth");
 
 dotenv.config();
 connectDB();
@@ -12,9 +13,13 @@ const app = express();
 app.use(cookieParser());
 
 app.use(express.json());
-app.use(require("cors")());
+app.use(require("cors")({
+  origin: true,
+  credentials: true,
+}));
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/verify", authenticateToken);
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/messages", messageRoutes);
